@@ -5,10 +5,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import Navigation from "./components/Navigation";
+import { authenticator } from "./services/auth.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,6 +25,16 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+export async function loader({ request }: Route.LoaderArgs) {
+  // 로그인 상태 확인
+  try {
+    const user = await authenticator.authenticate("auth0", request);
+    return { isAuthenticated: true, user };
+  } catch (error) {
+    return { isAuthenticated: false, user: null };
+  }
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -42,7 +55,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const { isAuthenticated, user } = useLoaderData<typeof loader>();
+  
+  return (
+    <>
+      <Navigation isAuthenticated={isAuthenticated} user={user} />
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
