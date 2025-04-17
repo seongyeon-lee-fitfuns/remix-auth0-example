@@ -11,7 +11,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import Navigation from "./components/Navigation";
-import { authenticator } from "./services/auth.server";
+import { getSession } from "./services/auth.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -29,10 +29,12 @@ export const links: Route.LinksFunction = () => [
 export async function loader({ request }: Route.LoaderArgs) {
   // 로그인 상태 확인
   try {
-    const user = await authenticator.authenticate("auth0", request);
-    return { isAuthenticated: true, user };
+    const session = await getSession(request.headers.get("cookie"));
+    console.log("root loader session", session.data);
+    const user = session.get("user");
+    return { user };
   } catch (error) {
-    return { isAuthenticated: false, user: null };
+    return { user: null };
   }
 }
 
@@ -55,11 +57,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { isAuthenticated, user } = useLoaderData<typeof loader>();
-  
+  const { user } = useLoaderData<typeof loader>();
   return (
     <>
-      <Navigation isAuthenticated={isAuthenticated} user={user} />
+      <Navigation user={user} />
       <Outlet />
     </>
   );

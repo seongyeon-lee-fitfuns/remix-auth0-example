@@ -13,7 +13,6 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("cookie"));
   const user = session.get("user");
-  console.log("user", user);
   // 로그인 상태 확인
   console.log("HOME LOADER +++++++++");
   return user;

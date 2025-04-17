@@ -1,15 +1,7 @@
 import { Link } from "react-router";
 import { useFetcher } from "react-router";
 
-interface NavigationProps {
-  isAuthenticated: boolean;
-  user?: {
-    name: string;
-    picture?: string;
-  } | null;
-}
-
-export default function Navigation({ isAuthenticated, user }: NavigationProps) {
+export default function Navigation({ user }: { user: any }) {
   const fetcher = useFetcher();
 
   return (
@@ -26,7 +18,7 @@ export default function Navigation({ isAuthenticated, user }: NavigationProps) {
             홈
           </Link>
           
-          {isAuthenticated ? (
+          {user ? (
             <>
               <Link to="/dashboard" className="hover:text-gray-300">
                 대시보드
@@ -34,7 +26,7 @@ export default function Navigation({ isAuthenticated, user }: NavigationProps) {
               <Link to="/profile" className="hover:text-gray-300">
                 내 프로필
               </Link>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mr-4">
                 {user?.picture && (
                   <img 
                     src={user.picture} 
@@ -44,6 +36,11 @@ export default function Navigation({ isAuthenticated, user }: NavigationProps) {
                 )}
                 <span>{user?.name}</span>
               </div>
+              <fetcher.Form method="GET" action="/auth/logout">
+                <button type="submit" className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded">
+                  로그아웃
+                </button>
+              </fetcher.Form>
             </>
           ) : (
             <fetcher.Form method="POST" action="/auth/login">
