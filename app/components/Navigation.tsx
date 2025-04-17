@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useFetcher } from "react-router";
 
 interface NavigationProps {
   isAuthenticated: boolean;
@@ -9,6 +10,8 @@ interface NavigationProps {
 }
 
 export default function Navigation({ isAuthenticated, user }: NavigationProps) {
+  const fetcher = useFetcher();
+
   return (
     <nav className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex flex-wrap items-center justify-between">
@@ -43,12 +46,11 @@ export default function Navigation({ isAuthenticated, user }: NavigationProps) {
               </div>
             </>
           ) : (
-            <Link 
-              to="/auth/login" 
-              className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded"
-            >
-              로그인
-            </Link>
+            <fetcher.Form method="POST" action="/auth/login">
+              <button type="submit" className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded">
+                로그인
+              </button>
+            </fetcher.Form>
           )}
         </div>
       </div>

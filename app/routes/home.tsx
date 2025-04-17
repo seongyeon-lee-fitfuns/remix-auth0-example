@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "react-router";
 import type { Route } from "./+types/home";
 import { authenticator } from "~/services/auth.server";
+import { useFetcher } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,6 +24,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Home() {
   const user = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
+  
 
   return (
     <div className="container mx-auto p-6">
@@ -43,12 +46,11 @@ export default function Home() {
       ) : (
         <div className="bg-white p-4 rounded shadow-md mb-6">
           <p className="mb-4">로그인하여 모든 기능을 이용해보세요!</p>
-          <Link 
-            to="/auth/login" 
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            로그인
-          </Link>
+          <fetcher.Form method="POST" action="/auth/login">
+            <button type="submit" className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded">
+              로그인
+            </button>
+          </fetcher.Form>
         </div>
       )}
       
