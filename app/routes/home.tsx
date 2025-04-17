@@ -1,7 +1,7 @@
 import { Link, useLoaderData } from "react-router";
 import type { Route } from "./+types/home";
-import { authenticator } from "~/services/auth.server";
 import { useFetcher } from "react-router";
+import { getSession } from "~/services/auth.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,15 +11,12 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("cookie"));
+  const user = session.get("user");
+  console.log("user", user);
   // 로그인 상태 확인
-  try {
-    const user = await authenticator.authenticate("auth0", request);
-    console.log("HOME LOADER +++++++++");
-    console.log(user);
-    return user;
-  } catch (error) {
-    return null;
-  }
+  console.log("HOME LOADER +++++++++");
+  return user;
 }
 
 export default function Home() {

@@ -7,9 +7,13 @@ export const sessionStorage = createCookieSessionStorage({
     name: "_auth_session",
     httpOnly: true,
     path: "/",
+    secrets: ["s3cr3t"],
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   },
 });
 
+export const { getSession, commitSession, destroySession } = sessionStorage;
 
 export const authenticator = new Authenticator<any>();
 
